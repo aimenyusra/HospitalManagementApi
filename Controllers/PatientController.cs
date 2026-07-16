@@ -91,5 +91,10 @@ namespace Hospital.Controllers
                 userId
             });
         }
+        [HttpGet("test-error")]
+        public async Task <IActionResult> TestError()
+        {
+            throw new Exception("Testing Middleware");
+        }
     }
 }

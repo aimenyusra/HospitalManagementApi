@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi;
+using Hospital.Middleware;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -64,6 +65,14 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.Use(async (context, next) =>
+{
+    Console.WriteLine("Before Controller");
+    await next();
+    Console.WriteLine("After Controller");
+});
+app.UseMiddleware<ExceptionMiddleware>();
+app.UseMiddleware<LogginMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 
