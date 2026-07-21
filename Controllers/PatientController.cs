@@ -5,33 +5,56 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Hospital.Controllers
 {
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    public class PatientController : ControllerBase
+    public class PatientController(HospitalDbContext context, ILogger<PatientController> logger, IMemoryCache memoryCache) : ControllerBase
     {
-        private readonly HospitalDbContext _context;
-        public PatientController(HospitalDbContext context)
-        {
-            _context = context;
-        }
+        private readonly HospitalDbContext _context = context;
+        private readonly ILogger<PatientController> _logger = logger;
+        private readonly IMemoryCache _memoryCache = memoryCache;
+
         [HttpGet]
         public async Task<IActionResult> GetPatients()
         {
-            var patients = await _context.Patients.ToListAsync();
+            string cacheKey = "Patient_List";
+            if(_memoryCache.TryGetValue(cacheKey, out List<Patient>? patients))
+            {
+               return Ok(patients);
+            }
+             patients = await _context.Patients.ToListAsync();
+            _memoryCache.Set(cacheKey, patients);
+            _logger.LogInformation("Retrieving all patients.");
+
             return Ok(patients);
+
         }
         [HttpGet("{id}")]
         public async Task<IActionResult> GetPatientById(int id)
         {
-            var patient = await _context.Patients.FindAsync(id);
+            string cacheKey = $"Patient_{id}";
+            if (_memoryCache.TryGetValue(cacheKey, out Patient? patient))
+            {
+                _logger.LogInformation("Patient retrieved from cache");
+                return Ok(patient);
+            }
+             patient = await _context.Patients.FindAsync(id);
+            _logger.LogInformation("Retrieving patient with ID: {id}", id);
             if (patient == null)
             {
+                _logger.LogWarning("Patient with ID: {id} not found.", id);
                 return NotFound();
             }
+            _logger.LogInformation("Patient with ID: {id} retrieved successfully.", id);
+            var cacheOptions = new MemoryCacheEntryOptions()
+                .SetSlidingExpiration(TimeSpan.FromMinutes(5))
+                .SetAbsoluteExpiration(TimeSpan.FromMinutes(10));
+
+            _memoryCache.Set(cacheKey, patient, cacheOptions);
             return Ok(patient);
         }
         [HttpPost]
@@ -46,6 +69,8 @@ namespace Hospital.Controllers
             };
             _context.Patients.Add(patient);
             await _context.SaveChangesAsync();
+            _memoryCache.Remove("Patient_List");
+            _logger.LogInformation("Patient added successfully.");
             return Ok(patient);
         }
         [HttpPut("{id}")]
@@ -54,6 +79,7 @@ namespace Hospital.Controllers
             var patient = await _context.Patients.FindAsync(id);
             if (patient == null)
             {
+                _logger.LogWarning("Patient with ID: {id} not found.", id);
                 return NotFound();
             }
 
@@ -62,6 +88,10 @@ namespace Hospital.Controllers
             patient.Disease = patientdto.Disease;
 
             await _context.SaveChangesAsync();
+            _logger.LogInformation("Patient with ID: {id} updated successfully.", id);
+            _memoryCache.Remove($"Patient_{id}");
+            _memoryCache.Remove("Patient_List");
+            
             return Ok(patient);
         }
         [Authorize(Policy = "AdminOnly")]
@@ -71,11 +101,15 @@ namespace Hospital.Controllers
             var patient = await _context.Patients.FindAsync(id);
             if (patient == null)
             {
+                _logger.LogWarning("Patient with ID: {id} not found.", id);
                 return NotFound();
             }
-
+           
+            
             _context.Patients.Remove(patient);
             await _context.SaveChangesAsync();
+            _memoryCache.Remove($"Patient_{id}");
+            _memoryCache.Remove("Patient_List");
             return Ok();
         }
         [HttpGet("Profile")]

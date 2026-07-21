@@ -30,6 +30,7 @@ builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
 });
+builder.Services.AddMemoryCache();
 builder.Services.AddControllers();
 // Configure Swagger/OpenAPI (Swashbuckle)
 builder.Services.AddEndpointsApiExplorer();
