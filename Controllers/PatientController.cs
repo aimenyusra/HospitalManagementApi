@@ -26,12 +26,26 @@ namespace Hospital.Controllers
             {
                return Ok(patients);
             }
-             patients = await _context.Patients.ToListAsync();
+             patients = await _context.Patients.OrderBy(p =>p.Name).AsNoTracking().ToListAsync();
             _memoryCache.Set(cacheKey, patients);
             _logger.LogInformation("Retrieving all patients.");
 
             return Ok(patients);
 
+        }
+        [HttpGet("Search")]
+        public async Task<IActionResult> Search(string search)
+        {
+            if (string.IsNullOrWhiteSpace(search))
+            {
+                return BadRequest("search value is required");
+            }
+            var patients = await _context.Patients
+                           .Where(p =>
+                           p.Name.Contains(search)||
+                           p.Disease.Contains(search))
+                           .ToListAsync();
+            return Ok(patients);
         }
         [HttpGet("{id}")]
         public async Task<IActionResult> GetPatientById(int id)
