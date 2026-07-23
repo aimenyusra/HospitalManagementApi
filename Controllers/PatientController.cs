@@ -14,9 +14,6 @@ namespace Hospital.Controllers
     [ApiController]
     public class PatientController(HospitalDbContext context, ILogger<PatientController> logger, IMemoryCache memoryCache) : ControllerBase
     {
-        private readonly HospitalDbContext _context = context;
-        private readonly ILogger<PatientController> _logger = logger;
-        private readonly IMemoryCache _memoryCache = memoryCache;
 
         [HttpGet]
         public async Task<IActionResult> GetPatients()
