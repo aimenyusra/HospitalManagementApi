@@ -5,6 +5,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi;
 using Hospital.Middleware;
+using Hospital.Services.Interfaces;
+using Hospital.Services.Implementation;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -55,7 +57,7 @@ new OpenApiSecurityRequirement
     [new OpenApiSecuritySchemeReference("Bearer", document)] = []
 });
 });
-
+builder.Services.AddScoped<IPatientService, PatientService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
