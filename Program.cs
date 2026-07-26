@@ -7,6 +7,7 @@ using Microsoft.OpenApi;
 using Hospital.Middleware;
 using Hospital.Services.Interfaces;
 using Hospital.Services.Implementation;
+using Hospital.FactoryPractise.Factory;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -58,6 +59,7 @@ new OpenApiSecurityRequirement
 });
 });
 builder.Services.AddScoped<IPatientService, PatientService>();
+builder.Services.AddScoped<PatientFactory>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
