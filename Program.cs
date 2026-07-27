@@ -8,6 +8,7 @@ using Hospital.Middleware;
 using Hospital.Services.Interfaces;
 using Hospital.Services.Implementation;
 using Hospital.FactoryPractise.Factory;
+using Hospital.Decorators;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -58,7 +59,9 @@ new OpenApiSecurityRequirement
     [new OpenApiSecuritySchemeReference("Bearer", document)] = []
 });
 });
-builder.Services.AddScoped<IPatientService, PatientService>();
+builder.Services.AddScoped< IPatientService,PatientService>();
+builder.Services.Decorate<IPatientService, LoggingPatientServiceDecorator>();
+builder.Services.Decorate<IPatientService, CachingPatientServiceDecorator>();
 builder.Services.AddScoped<PatientFactory>();
 var app = builder.Build();
 

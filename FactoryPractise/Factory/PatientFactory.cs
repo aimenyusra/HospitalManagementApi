@@ -7,11 +7,11 @@ namespace Hospital.FactoryPractise.Factory
     {
         public IPatient CreatePatient(string type)
         {
-            if(type.ToLower() == "outpatient")
+            if (type.ToLower() == "outpatient")
             {
                 return new OutPatient();
             }
-             if (type.ToLower() == "inpatient")
+            if (type.ToLower() == "inpatient")
             {
                 return new InPatient();
             }
@@ -23,6 +23,6 @@ namespace Hospital.FactoryPractise.Factory
             {
                 throw new ArgumentException("Invalid patient type");
             }
-        
+        }
     }
 }
