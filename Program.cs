@@ -11,6 +11,7 @@ using Hospital.FactoryPractise.Factory;
 using Hospital.Decorators;
 using Hospital.ObserverPattern.Interface;
 using Hospital.ObserverPattern.Observers;
+using Hospital.Repositories;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -69,6 +70,7 @@ builder.Services.AddScoped<IPatientObserver,AuditObserver>();
 builder.Services.AddScoped<IPatientObserver, DoctorNotificationObserver>();
 builder.Services.AddScoped<IPatientObserver, SmsObserver>();
 builder.Services.AddScoped<IPatientObserver,EmailObserver>();
+builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

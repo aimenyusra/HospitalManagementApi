@@ -9,6 +9,6 @@ namespace Hospital.ObserverPattern.Observers
         {
             Console.WriteLine($"Sending SMS notification for patient: {patient.Name}");
         }
-    {
+    
     }
 }

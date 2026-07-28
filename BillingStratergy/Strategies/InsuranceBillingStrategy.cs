@@ -10,6 +10,6 @@ namespace Hospital.BillingStratergy.Strategies
             return 0;
         }
     }
-    {
-    }
+    
+    
 }
