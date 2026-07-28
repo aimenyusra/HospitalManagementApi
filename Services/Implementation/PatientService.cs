@@ -1,6 +1,7 @@
 ﻿using Hospital.Data;
 using Hospital.DTOs;
 using Hospital.Models;
+using Hospital.ObserverPattern.Interface;
 using Hospital.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -10,11 +11,13 @@ namespace Hospital.Services.Implementation
     public class PatientService: IPatientService
     {
         private readonly HospitalDbContext _context;
-       
-       
-        public PatientService(HospitalDbContext context)
+        private readonly IEnumerable<IPatientObserver> _observers;
+
+
+        public PatientService(HospitalDbContext context, IEnumerable<IPatientObserver> observers)
         {
             _context = context;
+            _observers = observers;
          
         }
 
@@ -29,7 +32,10 @@ namespace Hospital.Services.Implementation
             };
             _context.Patients.Add(patient);
             await _context.SaveChangesAsync();
-    
+            foreach (var observer in _observers)
+            {
+                observer.Update(patient);
+            }
             return (patient);
         }
 
