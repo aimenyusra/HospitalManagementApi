@@ -64,12 +64,10 @@ namespace Hospital.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePatient(int id)
         {
-            var result = await _patientService.DeletePatientAsync(id);
-            if (!result)
-            {
-                return NotFound();
-            }
-            return Ok();
+            var command = new Hospital.Command.DeletePatientCommand(_patientService, id);
+            var invoker = new Hospital.Command.CommandInvoker();
+            await invoker.ExecuteCommandAsync(command);
+            return Ok("Patient deleted successfully.");
         }
         [HttpGet("Profile")]
         public async Task<IActionResult> GetProfile()
