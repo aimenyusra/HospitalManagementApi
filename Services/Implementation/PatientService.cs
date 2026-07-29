@@ -4,6 +4,7 @@ using Hospital.Models;
 using Hospital.ObserverPattern.Interface;
 using Hospital.Repositories;
 using Hospital.Services.Interfaces;
+using Hospital.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 
@@ -13,11 +14,11 @@ namespace Hospital.Services.Implementation
     {
       
         private readonly IEnumerable<IPatientObserver> _observers;
-        private readonly IPatientRepository _repository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public PatientService(IPatientRepository repository, IEnumerable<IPatientObserver> observers)
+        public PatientService(IUnitOfWork unitOfWork, IEnumerable<IPatientObserver> observers)
         {
-            _repository = repository;
+            _unitOfWork = unitOfWork;
             _observers = observers;
          
         }
@@ -36,25 +37,25 @@ namespace Hospital.Services.Implementation
             {
                 observer.Update(patient);
             }
-            return await _repository.AddAsync(patient);
+            return await _unitOfWork.Patients.AddAsync(patient);
         }
 
         public async Task<bool> DeletePatientAsync(int id)
         {
-            var patient = await _repository.GetByIdAsync(id);
+            var patient = await _unitOfWork.Patients.GetByIdAsync(id);
             if (patient == null)
             {
               
                 return false;
             }
 
-            return await _repository.DeleteAsync(patient);
+            return await _unitOfWork.Patients.DeleteAsync(patient);
         }
 
         public async Task<Patient?> GetPatientByIdAsync(int id)
         {
             
-           var patient = await _repository.GetByIdAsync(id);
+           var patient = await _unitOfWork.Patients.GetByIdAsync(id);
 
             if (patient == null)
             {
@@ -65,7 +66,7 @@ namespace Hospital.Services.Implementation
 
         public async Task<IEnumerable<Patient>> GetPatientsAsync()
         {   
-         var patients = await _repository.GetAllAsync();
+         var patients = await _unitOfWork.Patients.GetAllAsync();
             return patients;
         }
 
@@ -78,7 +79,7 @@ namespace Hospital.Services.Implementation
             {
                 return new List<Patient>();
             }
-            var patients = await _repository.SearchPatientsAsync(search);
+            var patients = await _unitOfWork.Patients.SearchPatientsAsync(search);
             return (patients);
         }
 
