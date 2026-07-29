@@ -62,7 +62,7 @@ namespace Hospital.Decorators
             _logger.LogInformation("Patients search completed.");
             return result;
         }
-        public async Task<Patient?> UpdatePatientAsync(int id, PatientDto patientDTO)
+        public async Task<Patient> UpdatePatientAsync(int id, PatientDto patientDTO)
         {
             _logger.LogInformation("Updating patient with ID: {id}", id);
             var result = await _patientService.UpdatePatientAsync(id, patientDTO);

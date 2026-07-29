@@ -64,7 +64,7 @@ new OpenApiSecurityRequirement
 });
 builder.Services.AddScoped< IPatientService,PatientService>();
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
-builder.Services.AddScoped(typeof (IGenericRepository<>), typeof (GenericRepository<>));
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.Decorate<IPatientService, LoggingPatientServiceDecorator>();
 builder.Services.Decorate<IPatientService, CachingPatientServiceDecorator>();
 builder.Services.AddScoped<PatientFactory>();

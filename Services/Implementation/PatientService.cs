@@ -9,7 +9,7 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace Hospital.Services.Implementation
 {
-    public class PatientService: IPatientService
+    public class PatientService: IPatientService    
     {
       
         private readonly IEnumerable<IPatientObserver> _observers;
@@ -84,7 +84,7 @@ namespace Hospital.Services.Implementation
 
        
 
-        public async Task<Patient?> UpdatePatientAsync(int id, PatientDto patientDTO)
+        public async Task<Patient> UpdatePatientAsync(int id, PatientDto patientDTO)
         {
             var patient = await _repository.GetByIdAsync(id);
             if (patient == null)
@@ -99,5 +99,6 @@ namespace Hospital.Services.Implementation
             await _repository.UpdateAsync(patient);
             return patient;
         }
+
     }
 }

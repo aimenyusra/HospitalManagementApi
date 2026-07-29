@@ -75,7 +75,7 @@ namespace Hospital.Decorators
                 return (patients);
             }
         }
-        public async Task<Patient?> UpdatePatientAsync(int id, PatientDto patientDTO)
+        public async Task<Patient> UpdatePatientAsync(int id, PatientDto patientDTO)
         {
             var result = await _patientService.UpdatePatientAsync(id, patientDTO);
             if (result != null)
