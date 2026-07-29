@@ -36,25 +36,25 @@ namespace Hospital.Services.Implementation
             {
                 observer.Update(patient);
             }
-            return await _repository.AddAsync(patient);
+            return await _repository.AddPatientAsync(patient);
         }
 
         public async Task<bool> DeletePatientAsync(int id)
         {
-            var patient = await _repository.GetByIdAsync(id);
+            var patient = await _repository.GetPatientByIdAsync(id);
             if (patient == null)
             {
               
                 return false;
             }
 
-            return await _repository.DeleteAsync(patient);
+            return await _repository.DeletePatientAsync(patient);
         }
 
         public async Task<Patient?> GetPatientByIdAsync(int id)
         {
             
-           var patient = await _repository.GetByIdAsync(id);
+           var patient = await _repository.GetPatientByIdAsync(id);
 
             if (patient == null)
             {
@@ -65,7 +65,7 @@ namespace Hospital.Services.Implementation
 
         public async Task<IEnumerable<Patient>> GetPatientsAsync()
         {   
-         var patients = await _repository.GetAllAsync();
+         var patients = await _repository.GetPatientsAsync();
             return patients;
         }
 
@@ -86,7 +86,7 @@ namespace Hospital.Services.Implementation
 
         public async Task<Patient?> UpdatePatientAsync(int id, PatientDto patientDTO)
         {
-            var patient = await _repository.GetByIdAsync(id);
+            var patient = await _repository.GetPatientByIdAsync(id);
             if (patient == null)
             { 
                 return null;
@@ -96,7 +96,7 @@ namespace Hospital.Services.Implementation
             patient.Age = patientDTO.Age;
             patient.Disease = patientDTO.Disease;
 
-            await _repository.UpdateAsync(patient);
+            await _repository.UpdatePatientAsync(patient);
             return patient;
         }
     }
